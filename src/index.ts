@@ -5,3 +5,4 @@
 
 export { parseUICode, UINode } from './parser/ui-parser';
 export { buildSemanticBundle, ForgeSemanticBundle } from './analyzer/semantic-builder';
+export { writeSemanticBundle } from './output/write-semantic';

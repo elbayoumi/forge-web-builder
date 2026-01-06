@@ -1,364 +1,326 @@
-📘 Forge Framework
-Semantic Build → Native Compile Platform
+# Forge Framework
+
+**Semantic Build → Native Compile Platform**
 
 Forge is a semantic compiler that transforms JavaScript UI intent into true native applications at build time — without runtimes, frameworks, or WebViews.
 
-Table of Contents
+---
 
-Overview
+## Overview
 
-Core Philosophy
+Forge eliminates JavaScript runtime execution entirely by:
 
-What Forge Is / Is Not
+1. **Analyzing** JavaScript at build time
+2. **Extracting** semantic intent
+3. **Generating** real native projects
 
-High-Level Architecture
+---
 
-End-to-End Pipeline
+## Core Principles
 
-Semantic Model (Core Concepts)
+- ✅ **Compile-time only** - No runtime execution
+- ✅ **No JavaScript runtime** - Pure native code
+- ✅ **No WebView** - True native UI
+- ✅ **No framework lock-in** - Standard native projects
+- ✅ **Full inspectability** - Every stage is transparent
 
-Project Structure
+---
 
-CLI Commands
+## Quick Start
 
-Web Semantic Build
+### 1. Create UI Source
 
-Native Android Compiler
+Create `src/ui.js`:
 
-Inspector
+```javascript
+ui(column(text("Hello Forge"), button("Click Me", handleClick)));
+```
 
-Design Constraints
+### 2. Build Semantic Bundle
 
-Determinism & Governance
-
-Roadmap
-
-Contribution Rules
-
-1. Overview
-
-Forge is a semantic compiler platform designed to solve a fundamental problem in modern cross-platform development:
-
-Existing solutions execute JavaScript at runtime.
-Forge eliminates runtime execution entirely.
-
-Instead of running JavaScript on native platforms, Forge:
-
-Analyzes JavaScript at build time
-
-Extracts semantic intent
-
-Generates real native projects
-
-2. Core Philosophy
-
-Forge is built on five non-negotiable principles:
-
-Compile-time only
-
-No JavaScript runtime
-
-No WebView
-
-No framework lock-in
-
-Full inspectability
-
-If a feature violates any of these principles, it does not belong in Forge.
-
-3. What Forge Is / Is Not
-Forge IS:
-
-A semantic compiler
-
-A build-time toolchain
-
-A native code generator
-
-A deterministic system
-
-A multi-stage compiler pipeline
-
-Forge IS NOT:
-
-A JavaScript framework
-
-A runtime engine
-
-A bundler
-
-React Native
-
-Flutter
-
-Ionic
-
-A UI library
-
-4. High-Level Architecture
-
-Forge is divided into independent, deterministic stages:
-
-JavaScript UI DSL
-        ↓
-Web Semantic Builder
-        ↓
-Semantic Artifacts (.forge/)
-        ↓
-Native Compiler
-        ↓
-True Native Projects
-
-
-Each stage:
-
-Has a single responsibility
-
-Produces explicit output
-
-Can be inspected independently
-
-5. End-to-End Pipeline
-Step 1 — Web Semantic Build
-
-Parses JavaScript UI DSL
-
-Extracts semantic intent
-
-Produces .forge/semantic/semantic.json
-
-Step 2 — Native Compilation
-
-Consumes semantic artifacts
-
-Generates a native Android project
-
-Uses Jetpack Compose (v0.1)
-
-6. Semantic Model (Core Concepts)
-6.1 UI Semantics
-
-Forge does not work with DOM or JSX.
-
-It uses a semantic UI graph:
-
-{
-  "type": "container",
-  "layout": "column",
-  "children": [
-    { "type": "text", "value": "Hello" },
-    { "type": "button", "label": "Submit", "action": "submit" }
-  ]
-}
-
-
-Supported UI nodes (v0.1):
-
-container (column / row)
-
-text
-
-button
-
-6.2 State Semantics
-
-State is declarative only:
-
-{
-  "fields": []
-}
-
-
-No lifecycle, no observers, no runtime behavior.
-
-6.3 Actions
-
-Actions describe intent, not implementation:
-
-{
-  "name": "submit",
-  "effects": [],
-  "inputs": []
-}
-
-6.4 Semantic Bundle (Source of Truth)
-
-All semantics are stored in a single canonical bundle:
-
-.forge/semantic/semantic.json
-
-
-This file is:
-
-Deterministic
-
-Rebuildable
-
-Inspectable
-
-The only source of truth
-
-7. Project Structure
-forge/
-├── forge-core/               # Semantic contracts & validation
-├── forge-web-builder/        # JS → Semantic
-├── forge-native-android/     # Semantic → Android
-├── forge-cli/                # Orchestration & inspection
-├── docs/
-└── README.md
-
-8. CLI Commands
-Build Commands
+```bash
 forge build web
+```
+
+Output: `.forge/semantic/semantic.json`
+
+### 3. Generate Native Android
+
+```bash
 forge build android
+```
 
-Inspection Commands
-forge inspect ui
-forge inspect semantic
+Output: `.forge/native/android/` (complete Gradle project)
 
-9. Web Semantic Build
-Input
+---
 
+## Architecture
+
+```
 JavaScript UI DSL
+      ↓
+Web Semantic Builder
+      ↓
+Semantic Bundle (.forge/semantic/semantic.json)
+      ↓
+Native Compiler
+      ↓
+Native Android Project (Jetpack Compose)
+```
 
-Fixed project convention (v0.1)
+---
 
-Output
-.forge/
-└── semantic/
-    └── semantic.json
+## Project Structure
 
-Responsibilities
+```
+forge/
+├── forge-core/              # Semantic type contracts
+├── forge-web-builder/       # JavaScript → Semantic
+├── forge-native-android/    # Semantic → Android
+├── forge-cli/               # CLI orchestration
+└── README.md
+```
 
-AST parsing
+---
 
-Semantic extraction
+## CLI Commands
 
-No runtime execution
+### Build Commands
 
-10. Native Android Compiler (v0.1)
-Output Location
-.forge/native/android/
+```bash
+# Build web semantic bundle
+forge build web
 
-Generated Project Includes:
+# Build Android native project
+forge build android
+```
 
-Full Gradle project
+---
 
-MainActivity.kt
+## Supported UI Components (v0.1)
 
-Jetpack Compose UI
+| DSL Component             | Android Output                              |
+| ------------------------- | ------------------------------------------- |
+| `text("...")`             | `Text(text = "...")`                        |
+| `button("label", action)` | `Button(onClick = {...}) { Text("label") }` |
+| `column(...)`             | `Column { ... }`                            |
+| `row(...)`                | `Row { ... }`                               |
 
-No WebView
+---
 
-No JavaScript
+## Example Workflow
 
-Android Configuration
+### Input: `src/ui.js`
 
-compileSdk: 34
+```javascript
+ui(
+  column(
+    text("Welcome to Forge"),
+    row(button("Start", onStart), button("Exit", onExit))
+  )
+);
+```
 
-minSdk: 24
+### Output: `MainActivity.kt`
 
-targetSdk: 34
+```kotlin
+@Composable
+fun MainScreen() {
+    Column {
+        Text(text = "Welcome to Forge")
+        Row {
+            Button(onClick = { Log.d("ForgeApp", "Button clicked: onStart") }) {
+                Text(text = "Start")
+            }
+            Button(onClick = { Log.d("ForgeApp", "Button clicked: onExit") }) {
+                Text(text = "Exit")
+            }
+        }
+    }
+}
+```
 
-11. Inspector
+---
 
-Forge includes a read-only inspection system.
+## Android Configuration
 
-Example
-forge inspect ui
+- **compileSdk**: 34
+- **minSdk**: 24
+- **targetSdk**: 34
+- **UI Framework**: Jetpack Compose
+- **Material**: Material3
 
+---
 
-Prints:
+## What Forge Is NOT
 
-Parsed UI tree
+- ❌ Not a JavaScript framework
+- ❌ Not a runtime engine
+- ❌ Not React Native
+- ❌ Not Flutter
+- ❌ Not Ionic
+- ❌ Not a bundler
 
-Semantic structure
+---
 
-forge inspect semantic
+## Semantic Model
 
+### UI Semantics
 
-Prints:
+```json
+{
+  "ui": {
+    "components": [
+      {
+        "id": "component_0",
+        "type": "column",
+        "props": {},
+        "children": [...]
+      }
+    ],
+    "layout": {
+      "type": "flex",
+      "direction": "column"
+    }
+  }
+}
+```
 
-Full semantic bundle (pretty JSON)
+### State Semantics (v0.1)
 
-12. Design Constraints (Intentional)
+```json
+{
+  "state": {
+    "entities": [],
+    "relationships": []
+  }
+}
+```
 
-Forge enforces strict constraints:
+### Action Semantics (v0.1)
 
-❌ No runtime JavaScript
+```json
+{
+  "action": {
+    "actions": [],
+    "flows": []
+  }
+}
+```
 
-❌ No DOM
+---
 
-❌ No JSX
+## Development
 
-❌ No CSS
+### Build All Packages
 
-❌ No dynamic execution
+```bash
+# Build forge-web-builder
+cd forge-web-builder
+npm install
+npm run build
 
-These constraints are features, not limitations.
+# Build forge-native-android
+cd ../forge-native-android
+npm install
+npm run build
 
-13. Determinism & Governance
+# Build forge-cli
+cd ../forge-cli
+npm install
+npm run build
+```
+
+### Run Tests
+
+```bash
+# Test web builder
+cd forge-web-builder
+node test-semantic.js
+node test-orchestration.js
+
+# Test Android generator
+cd ../forge-native-android
+node test-generator.js
+
+# Test CLI end-to-end
+cd ../forge-cli
+node test-e2e.js
+```
+
+---
+
+## Design Constraints
+
+Forge enforces strict constraints by design:
+
+- ❌ No runtime JavaScript
+- ❌ No DOM
+- ❌ No JSX
+- ❌ No CSS
+- ❌ No dynamic execution
+
+**These constraints are features, not limitations.**
+
+---
+
+## Determinism Guarantee
 
 Forge guarantees:
 
-Same input → same output
-
-No hidden behavior
-
-No implicit defaults
-
-No silent fixes
+- ✅ Same input → same output
+- ✅ No hidden behavior
+- ✅ No implicit defaults
+- ✅ No silent fixes
 
 All compiler stages are:
 
-Explicit
+- **Explicit** - No magic
+- **Inspectable** - Full transparency
+- **Replaceable** - Modular architecture
 
-Inspectable
+---
 
-Replaceable
+## Roadmap
 
-14. Roadmap
-Completed
+### ✅ Completed (v0.1)
 
-Semantic Core
+- Semantic Core
+- Web Semantic Builder
+- Android Native Compiler
+- CLI Orchestration
+- Build Pipeline
 
-Web Semantic Builder
+### 🔜 Planned
 
-Android Native Compiler
+- iOS Compiler (SwiftUI)
+- Desktop Targets
+- Extended Semantic Actions
+- Plugin System (Post v1)
 
-CLI Orchestration
+---
 
-Inspector
+## Contributing
 
-Planned
+Forge is architecture-first. Before contributing:
 
-iOS Compiler (SwiftUI)
+1. Read this README
+2. Respect semantic contracts
+3. Do not introduce runtime logic
+4. Do not assume future features
 
-Desktop Targets
+**Forge values correctness over convenience.**
 
-Extended Semantic Actions
+---
 
-Plugin System (Post v1)
+## License
 
-15. Contribution Rules
+MIT
 
-Forge is architecture-first.
+---
 
-Before contributing:
+## Final Note
 
-Read this README
-
-Respect semantic contracts
-
-Do not introduce runtime logic
-
-Do not assume future features
-
-Forge values correctness over convenience.
-
-Final Note
-
-Forge is not a framework.
-It is a compiler.
+**Forge is not a framework. It is a compiler.**
 
 If you approach it as a framework, you will misuse it.
